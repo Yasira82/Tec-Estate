@@ -6,10 +6,13 @@ import { usePiAuth, ssoRedirect }  from '@yasser172/tec-auth';
 import { TEC_COLORS }              from '@yasser172/tec-ui';
 
 // ── تعديل حسب الـ domain ──────────────────────────────────
+// Estate identity — baked as fallbacks so login works even if the NEXT_PUBLIC_*
+// vars are unset on Vercel. APP_URL MUST be estate (it becomes the SSO target the
+// Hub validates against ALLOWED_TARGETS — a wrong value → invalid_target).
 const HUB_URL    = process.env.NEXT_PUBLIC_HUB_URL    ?? 'https://hub.tecosystem.app';
-const APP_URL    = process.env.NEXT_PUBLIC_APP_URL    ?? 'https://app.tecosystem.app';
-const APP_NAME   = process.env.NEXT_PUBLIC_APP_NAME   ?? 'TEC App';
-const APP_EMOJI  = process.env.NEXT_PUBLIC_APP_EMOJI  ?? '🔷';
+const APP_URL    = process.env.NEXT_PUBLIC_APP_URL    ?? 'https://estate.tecosystem.app';
+const APP_NAME   = process.env.NEXT_PUBLIC_APP_NAME   ?? 'TEC Estate';
+const APP_EMOJI  = process.env.NEXT_PUBLIC_APP_EMOJI  ?? '🏡';
 
 export default function HomePage() {
   const { isAuthenticated, isLoading } = usePiAuth();
@@ -28,18 +31,22 @@ export default function HomePage() {
   return (
     <div style={{
       minHeight:      '100vh',
-      background:     '#020205',
+      background:     TEC_COLORS.bg,
       display:        'flex',
       alignItems:     'center',
       justifyContent: 'center',
+      padding:        24,
     }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>{APP_EMOJI}</div>
-        <div style={{ fontSize: 24, fontWeight: 900, color: TEC_COLORS.gold, marginBottom: 8 }}>
+      <div style={{ textAlign: 'center', maxWidth: 420 }}>
+        <div style={{ fontSize: 52, marginBottom: 16 }}>{APP_EMOJI}</div>
+        <div style={{ fontSize: 12, letterSpacing: 1.5, color: TEC_COLORS.subtext, textTransform: 'uppercase' }}>
+          TEC · Real Estate OS
+        </div>
+        <div style={{ fontSize: 26, fontWeight: 900, color: TEC_COLORS.gold, margin: '6px 0 8px' }}>
           {APP_NAME}
         </div>
-        <div style={{ fontSize: 13, color: TEC_COLORS.subtext, marginBottom: 32 }}>
-          TEC ECOSYSTEM
+        <div style={{ fontSize: 13, color: TEC_COLORS.subtext, marginBottom: 32, lineHeight: 1.6 }}>
+          Where do you live, and what do you own? Sign in to manage your property lifecycle.
         </div>
         <button
           onClick={handleLogin}

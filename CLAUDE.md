@@ -1,15 +1,81 @@
-# TEC Domain App Template — Claude Code Instructions
+# TEC Estate — Claude Code Instructions
 
-## What This Repo Is
+> ⚡ **SESSION START:** اقرأ `knowledge-base/C-02___CURRENT_STATE_.md` + **app charter
+> `knowledge-base/C-114___ESTATE_INSTITUTIONAL_CHARTER.md`** من `yasira82/tec-knowledge-base` (branch: `main`).
 
-The **golden starter template** for a new app in the TEC Federated Platform.
-It ships a correct, Portal-ready skeleton: Hub SSO, dual-mode Pi payments,
-CSRF, legal pages, and CI policy guards. Clone it, run the "New app setup"
-checklist below, and you have a compliant app — no missing pieces.
+## What This App Is
 
-**Reference of record:** `yasira82/tec-knowledge-base` — especially
-`C-12_Dual_Mode_Payment.md` (payment + anti-regression) and
-`audits/PORTAL_SUBMISSION_RUNBOOK_*.md`.
+**The Real Estate Operating System of TEC** (C-114, extended). Estate is NOT just a
+property marketplace ("what do I want to buy?"). It answers a bigger question:
+
+```
+"Where do I live, and what do I own or manage in real estate?"
+```
+
+Estate manages the **complete lifecycle** of a property:
+**ownership · leasing · investment · maintenance · verification · financing · protection.**
+
+It is the coordination layer that integrates with the rest of TEC:
+- **Life** (C-106) → housing goals / needs
+- **Connection** (C-107) → trusted agents, owners, tenants
+- **Zone** (C-120) → verification of the property, owner, and agent
+- **Analytics** (C-105) → area prices, expected yield, market trends
+- **FundX** (C-113) → property financing + collective investment pools
+- **Insure** → property protection
+
+Built from `tec-template-base` (Next.js 15 frontend).
+
+**Current Phase: Estate V0 — App Scaffold & Portal Readiness.** Identity / domain /
+slug / legal + Real-Estate-OS themed home + **Estate Pro payment surface** (the Pi
+Portal "Process a Transaction" gate) + a **read-only sample Portfolio** (lifecycle
+demo). Real transactions are NOT built (see boundary). Not yet deployed.
+
+---
+
+## Pi App Identity
+
+| Field | Value |
+|-------|-------|
+| **App** | TEC Estate |
+| **Domain** | `https://estate.tecosystem.app` |
+| **Pi App ID** | ⏳ TBD — register at Pi Developer Portal · then Vercel `NEXT_PUBLIC_PI_APP_ID` |
+| **APP_SOURCE slug** | `estate` (payment-service resolves `PI_API_KEY_ESTATE`) |
+| **PI_SANDBOX** | `false` (Mainnet) |
+
+---
+
+## Estate-Specific Rules (C-114)
+
+### The boundary — Estate coordinates the lifecycle; it does NOT own the money or the title
+Estate **OWNS**: the property portfolio view, lifecycle management UI (leasing,
+maintenance, documents), listing/discovery UI, inquiry flow, and Pi **service**
+payment coordination. Estate does **NOT OWN**:
+- **Full property purchase in Pi** — legal liability too high. Estate processes Pi
+  **services** only (listing fees, consultation, viewing, refundable reservation
+  deposits) — **never the full property value** (C-114 §4 Key Distinction, §6).
+- **Legal title transfer** → external legal process.
+- **Capital / payment** → tec-payment-service; **financing** → FundX (C-113).
+- **Valuation truth** → external market data (present via Analytics, never assert).
+- **Agent identity** → tec-kyc-service (KYC required for listing agents, not browsers).
+
+### What Estate DOES process in Pi (services only)
+```
+Listing fees · Premium visibility · Consultation fees · Viewing fees ·
+Refundable reservation deposits   — all Pi-denominated SERVICES, not property value.
+```
+
+### Trust + verification
+Property, owner, and agent verification come from **Zone** (C-120) — Estate presents
+"Zone Verified" status, it does not mint it. Agent reputation comes from **Connection**
+(C-107). Prices/yield shown are **indicative** (Analytics) — never presented as truth.
+
+### Isolation (P6)
+Agent/owner identity is derived from the `tec_user` session cookie server-side —
+**never from a listing/request body**. No session → fail closed.
+
+**Reference of record:** `yasira82/tec-knowledge-base` —
+`C-114___ESTATE_INSTITUTIONAL_CHARTER.md` (charter) + `C-12_Dual_Mode_Payment.md`
+(payment anti-regression) + `C-123` (session/cookies).
 
 ---
 
@@ -43,11 +109,14 @@ if (isHubNavigation() || !(window as any).Pi || !piReady) {
 }
 // Mode 2: standalone — createPaymentRecord() then createU2APayment() (src/lib/pi-payment.ts)
 ```
+> The hub-entry signal is `__tec_hub_entry` (sessionStorage) **OR** referrer — the
+> landing page (C-123 LAW 2) made referrer-alone unreliable (C-12 §3). Do not remove it.
 
 ### ADR-009 — Unified payment contract
 `amount` is a **number**; gateway path is **`/api/payment/*`** (singular); the only
 inter-service header is **`x-internal-key`** + `INTERNAL_SECRET`. Don't re-declare
-payment Zod locally — shapes live in `@yasser172/tec-sdk`.
+payment Zod locally — shapes live in `@yasser172/tec-sdk`. Approve under
+`PI_API_KEY_ESTATE` (never the default Hub key — the Analytics approve→502 lesson, C-12 §11).
 
 ### Two-SDK boundary
 ```
@@ -61,67 +130,60 @@ Identity is derived from the `tec_user` cookie server-side — **never from the 
 
 ---
 
-## What's included
+## Setup status + Roadmap (C-114 §10)
 
 ```
-middleware.ts                              CSRF (double-submit OR Origin) + page guard
-src/app/api/auth/sso-callback/route.ts     Hub SSO landing (open-redirect-safe)
-src/app/api/auth/refresh/route.ts          token refresh
-src/app/api/bff/payment/{create,approve,complete,resolve-incomplete}/route.ts
-src/app/api/bff/items/route.ts             example domain route (copy this pattern)
-src/app/api/health/route.ts                health endpoint (C-92/C-96) — fail-safe, public, never 500s
-src/lib/pi-payment.ts                      createPaymentRecord + createU2APayment
-src/lib/pi/PiRuntime.ts                    PAL — single choke-point for window.Pi.* (R1)
-src/lib/pi/PiCircuitBreaker.ts             CLOSED→OPEN→HALF_OPEN (3 fails → 60s)
-src/lib/flags.ts                           feature flags (NEXT_PUBLIC_FLAG_*) + useFlag
-src/lib/observability/logger.ts            structured JSON logger (log.info/warn/error) — no silent failures (C-96)
-src/lib/observability/reportError.ts       Sentry-ready error reporter (single swap-point)
-src/app/privacy/page.tsx · terms/page.tsx  Pi Portal legal pages
-src/styles/tec-design-tokens.css           import in app/layout.tsx
-.github/workflows/ci.yml                   payment-policy + CSRF guard + lint/typecheck/test/build
+Estate V0 — App Scaffold & Portal Readiness (customized from template):
+  ✅ package.json name = tec-estate · APP_SOURCE = 'estate'
+  ✅ sso-callback ALLOWED_AUDIENCES → estate.tecosystem.app + tec-estate.vercel.app
+  ✅ privacy + terms → TEC Estate / estate.tecosystem.app
+  ✅ NEW-A: no NEXT_PUBLIC_API_GATEWAY_URL / Railway host in the client bundle
+  ✅ layout Pi init is hub-entry-aware (C-12 §3 / ADR-007 foreign-session skip)
+  ✅ /app themed as the Real Estate OS home + Estate Pro (real Pi U2A payment)
+  ✅ read-only sample Portfolio (lifecycle demo — NO purchase, NO title transfer)
+
+Next (before live):
+  □ Register Pi App ID (Pi Developer Portal) → set Vercel NEXT_PUBLIC_PI_APP_ID +
+    API_GATEWAY_URL · INTERNAL_SECRET · SSO_SECRET · PI_SANDBOX=false.
+  □ payment-service: set PI_API_KEY_ESTATE on Railway (approve→502 otherwise, C-12 §11).
+  □ Hub SSO: add estate.tecosystem.app + tec-estate.vercel.app to Hub /api/auth/sso
+    ALLOWED_TARGETS + Hub domain registry (both in this change).
+  □ Deploy (Vercel) + runtime-verify login (C-123) + a real Estate Pro payment
+    Mode 1 (Hub) AND Mode 2 (standalone). Ensure Portal Linked App = MAINNET (a
+    Testnet linked app on a Mainnet listing = SDK_MISSING at payment — FundX lesson).
+
+Estate V1+ (post-Portal — C-114 §10): property listing directory (search + gallery,
+  images via tec-storage-service) → Pi listing fees + inquiry → portfolio lifecycle
+  (leases, maintenance, documents) → FundX financing + Insure protection + Zone
+  verification integration. Real capital/title stays OUT of Estate (§6).
 ```
 
-**v2 (production-ready by default):** every new app ships
-- `/api/health` — uniform C-92 signal (platform health runtime + observability scrape + SLO/runtime-evidence loop);
-- structured `log` + `reportError` — use `log.error`/`reportError` in catch blocks (a silent error handler is an invisible failure, C-96; `reportError` is the one place to wire Sentry per app);
-- `PiRuntime` (PAL) + `PiCircuitBreaker` — never call `window.Pi.*` directly; go through PiRuntime so an SDK change is a one-file fix (R1) and flapping is contained;
-- `flags.ts` — feature flags from day one (`NEXT_PUBLIC_FLAG_<NAME>`);
-- coverage gate — `npm run test:coverage` (add devDep `@vitest/coverage-v8`; 60% floor, raise as the app grows).
-
----
-
-## New app setup checklist
-
-```
-□ package.json: set "name"
-□ middleware.ts: adjust PROTECTED_ROUTES
-□ sso-callback/route.ts: set ALLOWED_AUDIENCES + DEFAULT_REDIRECT to your domain
-□ src/lib/pi-payment.ts + payment/create: set APP_SOURCE slug
-□ privacy/page.tsx + terms/page.tsx: set APP / DOMAIN / governing law / contacts
-□ Add ADR-007 isHubNavigation() guard to every buy handler
-□ .env: API_GATEWAY_URL · INTERNAL_SECRET · SSO_SECRET · NEXT_PUBLIC_PI_APP_ID · PI_SANDBOX=false (prod)
-□ Pi Developer Portal: register domain + App ID; set /privacy + /terms URLs
-□ Verify a real Pi payment Mode 1 (via Hub) AND Mode 2 (standalone)
-```
+> Estate monetization (C-114 §7) is service fees (listing, premium, consultation).
+> The payment scaffold + `isHubNavigation()` guard are kept for the Portal gate; any
+> direct buy MUST keep the ADR-007 guard and needs `PI_API_KEY_ESTATE`.
 
 ---
 
 ## What NOT To Do
 
+- Do NOT process a full property purchase in Pi — services only (C-114 §4/§6)
+- Do NOT transfer legal title — that is an external legal process
+- Do NOT hold capital or compute financing in Estate — payment-service + FundX own that
+- Do NOT assert valuation/price as truth — it is indicative (Analytics)
+- Do NOT mint verification — present Zone's "Verified" status, never create it
 - Do NOT validate CSRF in a route handler — middleware only (CI blocks it)
 - Do NOT send `amount` as a string, or use `/payments` / `x-service-secret`
 - Do NOT skip the ADR-007 `isHubNavigation()` guard before `window.Pi`
 - Do NOT store tokens in localStorage; do NOT derive identity from the body
 - Do NOT add `NEXT_PUBLIC_*` for internal service URLs or `INTERNAL_SECRET`
-- Do NOT use an open `redirect` param without the same-origin guard (open redirect)
 
 ---
 
 ## Commit Convention
 
 ```
-feat(scope):  new feature      fix(payment): payment flow fix (test carefully)
-fix(scope):   bug fix          chore(scope): build/config
+feat(estate):  new lifecycle feature   fix(payment): payment flow fix (test carefully)
+fix(estate):   bug fix                  chore(scope):  build/config
 ```
 
 ---

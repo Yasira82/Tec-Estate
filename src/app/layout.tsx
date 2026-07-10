@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import '@/styles/tec-design-tokens.css';
 
 export const metadata: Metadata = {
-  title:       'TEC Domain',
-  description: 'TEC Ecosystem — Pi Network Super App',
+  title:       'TEC Estate — Real Estate Operating System',
+  description: 'TEC Estate — the Real Estate OS of TEC. Manage the full lifecycle of property: ownership, leasing, investment, maintenance, verification, financing, and protection.',
 };
 
 export default function RootLayout({
