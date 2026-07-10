@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { PORTFOLIO, PILLARS, getProperty } from '@/lib/estate/portfolio';
+import {
+  PORTFOLIO, PILLARS, getProperty, isPropertyAsset, mapAssetToProperty,
+} from '@/lib/estate/portfolio';
 
 describe('TEC Estate — Real Estate OS portfolio (C-114, read-only)', () => {
   it('exposes the six lifecycle pillars', () => {
@@ -28,5 +30,28 @@ describe('TEC Estate — Real Estate OS portfolio (C-114, read-only)', () => {
   it('getProperty fails closed for an unknown id', () => {
     expect(getProperty('nope')).toBeNull();
     expect(getProperty('downtown-apt-12b')?.title).toBe('Downtown Apartment 12B');
+  });
+
+  it('isPropertyAsset keeps only property-kind assets (asset-service, C-114 §12)', () => {
+    expect(isPropertyAsset({ metadata: { kind: 'property' } })).toBe(true);
+    expect(isPropertyAsset({ category: 'REAL_ESTATE' })).toBe(true);
+    expect(isPropertyAsset({ category: 'DOMAIN', metadata: { kind: 'domain' } })).toBe(false);
+    expect(isPropertyAsset({})).toBe(false);
+  });
+
+  it('mapAssetToProperty maps an asset-service Asset into the Estate shape (with safe defaults)', () => {
+    const p = mapAssetToProperty({
+      slug: 'flat-9a', status: 'ACTIVE', category: 'REAL_ESTATE',
+      metadata: { kind: 'property', title: 'Flat 9A', type: 'apartment', ownership: 'owned', location: 'Cairo', zoneVerified: true },
+    });
+    expect(p.id).toBe('flat-9a');
+    expect(p.title).toBe('Flat 9A');
+    expect(p.type).toBe('apartment');
+    expect(p.zoneVerified).toBe(true);
+    // Missing lifecycle → safe defaults, never undefined (never blank in the UI).
+    expect(p.lifecycle.ownership).toBeTruthy();
+    // An unknown type coerces to a valid default, not a crash.
+    const q = mapAssetToProperty({ metadata: { kind: 'property', type: 'spaceship' } });
+    expect(['apartment']).toContain(q.type);
   });
 });

@@ -119,3 +119,56 @@ export const PORTFOLIO: Property[] = [
 
 export const getProperty = (id: string): Property | null =>
   PORTFOLIO.find((p) => p.id === id) ?? null;
+
+// ── asset-service integration (C-114 §12) ───────────────────────────────────
+// A property is stored as an Asset in tec-asset-service (Estate never owns the
+// record — it presents it). We tag property assets with metadata.kind==='property'
+// and carry the display fields in metadata. This maps one asset-service Asset
+// into the Estate Property shape for the portfolio view.
+
+export interface AssetRecord {
+  id?:       string;
+  slug?:     string;
+  ownerId?:  string;
+  category?: string;
+  status?:   string;
+  metadata?: Record<string, unknown> | null;
+}
+
+const asStr = (v: unknown, fallback = ''): string =>
+  typeof v === 'string' && v.trim() ? v : fallback;
+
+const PROPERTY_TYPES: PropertyType[] = ['apartment', 'villa', 'land', 'office', 'shop', 'warehouse', 'farm'];
+const OWNERSHIP_TYPES: OwnershipType[] = ['owned', 'shared', 'investment', 'rental'];
+const LEASE_STATUSES: LeaseStatus[] = ['owner-occupied', 'leased', 'vacant', 'listed'];
+
+/** True if an asset-service Asset represents an Estate property. */
+export const isPropertyAsset = (a: AssetRecord): boolean =>
+  (a?.metadata?.kind === 'property') || (a?.category === 'REAL_ESTATE');
+
+/** Map an asset-service Asset (kind=property) → the Estate Property shape. */
+export const mapAssetToProperty = (a: AssetRecord): Property => {
+  const m = (a.metadata ?? {}) as Record<string, unknown>;
+  const type = PROPERTY_TYPES.includes(m.type as PropertyType) ? (m.type as PropertyType) : 'apartment';
+  const ownership = OWNERSHIP_TYPES.includes(m.ownership as OwnershipType) ? (m.ownership as OwnershipType) : 'owned';
+  const leaseStatus = LEASE_STATUSES.includes(m.leaseStatus as LeaseStatus) ? (m.leaseStatus as LeaseStatus) : 'owner-occupied';
+  const lc = (m.lifecycle ?? {}) as Partial<Lifecycle>;
+  return {
+    id:          asStr(a.slug ?? a.id, 'property'),
+    title:       asStr(m.title, a.slug ?? 'Property'),
+    type,
+    ownership,
+    location:    asStr(m.location, '—'),
+    leaseStatus,
+    indicativeValue: asStr(m.indicativeValue, 'Value indicative — set by Analytics'),
+    zoneVerified: m.zoneVerified === true,
+    lifecycle: {
+      ownership:    asStr(lc.ownership, 'Ownership recorded in tec-asset-service (title truth via external legal).'),
+      leasing:      asStr(lc.leasing, 'No lease on record.'),
+      management:   asStr(lc.management, 'No management records yet.'),
+      investment:   asStr(lc.investment, 'No active financing.'),
+      verification: asStr(lc.verification, a.status === 'ACTIVE' ? 'Ownership active; Zone verification pending.' : 'Verification pending.'),
+      protection:   asStr(lc.protection, 'No active policy.'),
+    },
+  };
+};
