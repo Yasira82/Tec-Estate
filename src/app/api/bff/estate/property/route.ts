@@ -48,12 +48,13 @@ export async function POST(req: NextRequest) {
   }
   const { title, type, ownership, location, payment_id } = parsed.data;
 
-  // A property is a DIGITAL_ASSET tagged metadata.kind='property' — no backend
-  // migration needed; isPropertyAsset() reads it back on the portfolio route.
+  // A property is a first-class REAL_ESTATE asset in tec-asset-service (C-114 §12).
+  // metadata.kind='property' is kept as a belt-and-suspenders tag — isPropertyAsset()
+  // matches on either the category or the tag, so the portfolio reads it back both ways.
   const body = {
     transactionId: payment_id,
     userId,                                    // owner = session identity, never the body
-    category:      'DIGITAL_ASSET',
+    category:      'REAL_ESTATE',
     slug:          slugifyProperty(title),
     metadata:      buildPropertyMetadata({ title, type, ownership, location }),
   };
