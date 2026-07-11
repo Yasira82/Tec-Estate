@@ -115,10 +115,9 @@ export default function EstateHome() {
                   <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 5 }}>{p.indicativeValue}</div>
                 </>
               );
-              // Sample entries have a prerendered /property/[id] page; live ones don't (next increment).
-              return isLive
-                ? <div key={p.id} style={card}>{inner}</div>
-                : <Link key={p.id} href={`/property/${p.id}`} style={propCard}>{inner}</Link>;
+              // Both sample and live properties have a /property/[id] detail page
+              // (live is fetched owner-only from tec-asset-service, C-114 §12).
+              return <Link key={p.id} href={`/property/${p.id}`} style={propCard}>{inner}</Link>;
             })}
           </div>
         </section>
