@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
 import { EstatePro } from './components/EstatePro';
+import { RegisterProperty } from './components/RegisterProperty';
 import { PORTFOLIO, PILLARS, TYPE_META, OWNERSHIP_META, type Property } from '@/lib/estate/portfolio';
 
 export default function EstateHome() {
@@ -26,20 +27,18 @@ export default function EstateHome() {
   const [source, setSource] = useState<'sample' | 'live'>('sample');
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        const res = await fetch('/api/bff/estate/portfolio', { credentials: 'include' });
-        const data = await res.json().catch(() => null);
-        if (!alive || !data || !Array.isArray(data.portfolio)) return;
-        setPortfolio(data.portfolio as Property[]);
-        setSource(data.source === 'live' ? 'live' : 'sample');
-      } catch { /* keep the optimistic sample */ }
-      finally { if (alive) setLoaded(true); }
-    })();
-    return () => { alive = false; };
-  }, []);
+  const loadPortfolio = async () => {
+    try {
+      const res = await fetch('/api/bff/estate/portfolio', { credentials: 'include' });
+      const data = await res.json().catch(() => null);
+      if (!data || !Array.isArray(data.portfolio)) return;
+      setPortfolio(data.portfolio as Property[]);
+      setSource(data.source === 'live' ? 'live' : 'sample');
+    } catch { /* keep the optimistic sample */ }
+    finally { setLoaded(true); }
+  };
+
+  useEffect(() => { void loadPortfolio(); }, []);
 
   const card: React.CSSProperties = {
     background:   TEC_COLORS.surface,
@@ -67,6 +66,9 @@ export default function EstateHome() {
 
         {/* Estate Pro — real Pi U2A payment (a SERVICE subscription, not a property purchase). */}
         <EstatePro />
+
+        {/* Register a property — records it in tec-asset-service, gated by a Pi listing fee. */}
+        <RegisterProperty onRegistered={() => { void loadPortfolio(); }} />
 
         {/* The lifecycle pillars — what the Real Estate OS manages. */}
         <section style={{ marginTop: 28 }}>
