@@ -6,7 +6,11 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { TEC_COLORS } from '@yasser172/tec-ui';
 import { getProperty, PORTFOLIO, TYPE_META, OWNERSHIP_META } from '@/lib/estate/portfolio';
+import { fetchLiveProperty } from '@/lib/estate/fetch-property';
 
+// Samples are prerendered (SSG); a live property slug not in this list is
+// server-rendered on demand (dynamicParams defaults to true) and read from
+// tec-asset-service, owner-only (P6).
 export function generateStaticParams() {
   return PORTFOLIO.map((p) => ({ id: p.id }));
 }
@@ -23,7 +27,10 @@ export default async function PropertyPage(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const p = getProperty(id);
+  // Sample first (SSG); otherwise a live, owner-only property from the asset-service.
+  const sample = getProperty(id);
+  const p = sample ?? await fetchLiveProperty(id);
+  const isLive = !sample && !!p;
 
   const wrap: React.CSSProperties = {
     minHeight: '100vh', background: TEC_COLORS.bg, color: TEC_COLORS.text,
@@ -37,7 +44,10 @@ export default async function PropertyPage(
         <div style={inner}>
           <Link href="/app" style={{ fontSize: 13, color: TEC_COLORS.gold, textDecoration: 'none' }}>← Portfolio</Link>
           <h1 style={{ fontSize: 22, fontWeight: 900, color: TEC_COLORS.text, marginTop: 16 }}>Property not found</h1>
-          <p style={{ fontSize: 13, color: TEC_COLORS.subtext }}>No property with id <code>{id}</code> in this sample portfolio.</p>
+          <p style={{ fontSize: 13, color: TEC_COLORS.subtext }}>
+            No property <code>{id}</code> you can view. Live properties are visible only
+            to their owner — sign in with the owning account (P6).
+          </p>
         </div>
       </main>
     );
@@ -85,10 +95,13 @@ export default async function PropertyPage(
         </div>
 
         <p style={{ fontSize: 11, color: TEC_COLORS.subtext, margin: '22px 0 0', lineHeight: 1.5 }}>
-          This is a read-only sample. Estate coordinates the lifecycle — it never
-          processes a full property purchase in Pi, transfers legal title, or holds
-          capital (C-114 §6). Financing → FundX · verification → Zone · protection →
-          Insure · payments → tec-payment-service · title → external legal.
+          {isLive
+            ? 'Recorded in tec-asset-service (C-114 §12) — Estate presents it, never owns it. '
+            : 'This is a read-only sample. '}
+          Estate coordinates the lifecycle — it never processes a full property
+          purchase in Pi, transfers legal title, or holds capital (C-114 §6).
+          Financing → FundX · verification → Zone · protection → Insure ·
+          payments → tec-payment-service · title → external legal.
         </p>
       </div>
     </main>
