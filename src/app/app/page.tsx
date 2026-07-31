@@ -8,34 +8,38 @@
 //
 // The portfolio is served by /api/bff/estate/portfolio, which reads the caller's
 // OWN property assets from tec-asset-service (C-114 §12) — Estate presents, it
-// never owns the record. Falls back to a curated read-only sample when the user
-// has no properties yet (source:'sample').
+// never owns the record. Real data end-to-end (C-135 §4): the lifecycle pillars
+// are definitional; the portfolio is the user's own data (honest empty when there
+// are none / no session — never a fabricated sample).
 import Link from 'next/link';
+import { InviteCard } from '@/components/referral/InviteCard';
 import { useEffect, useState } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
 import { EstatePro } from './components/EstatePro';
 import { RegisterProperty } from './components/RegisterProperty';
-import { PORTFOLIO, PILLARS, TYPE_META, OWNERSHIP_META, type Property } from '@/lib/estate/portfolio';
+import { PILLARS, TYPE_META, OWNERSHIP_META, type Property } from '@/lib/estate/portfolio';
 
 export default function EstateHome() {
   const { user, isLoading } = usePiAuth();
   const name = user?.piUsername ? `@${user.piUsername}` : 'there';
 
-  // Optimistic sample first; replaced by the BFF result (live or sample).
-  const [portfolio, setPortfolio] = useState<Property[]>(PORTFOLIO);
-  const [source, setSource] = useState<'sample' | 'live'>('sample');
-  const [loaded, setLoaded] = useState(false);
+  const [portfolio, setPortfolio] = useState<Property[]>([]);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'unavailable'>('loading');
 
   const loadPortfolio = async () => {
+    setStatus('loading');
     try {
       const res = await fetch('/api/bff/estate/portfolio', { credentials: 'include' });
       const data = await res.json().catch(() => null);
-      if (!data || !Array.isArray(data.portfolio)) return;
-      setPortfolio(data.portfolio as Property[]);
-      setSource(data.source === 'live' ? 'live' : 'sample');
-    } catch { /* keep the optimistic sample */ }
-    finally { setLoaded(true); }
+      if (data && data.source === 'live' && Array.isArray(data.portfolio)) {
+        setPortfolio(data.portfolio as Property[]);
+        setStatus('ready');
+      } else {
+        setPortfolio([]);
+        setStatus('unavailable');
+      }
+    } catch { setPortfolio([]); setStatus('unavailable'); }
   };
 
   useEffect(() => { void loadPortfolio(); }, []);
@@ -47,7 +51,6 @@ export default function EstateHome() {
     padding:      14,
   };
   const propCard: React.CSSProperties = { ...card, display: 'block', textDecoration: 'none' };
-  const isLive = source === 'live';
 
   return (
     <main style={{ minHeight: '100vh', background: TEC_COLORS.bg, color: TEC_COLORS.text, padding: '32px 22px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -84,19 +87,32 @@ export default function EstateHome() {
           </div>
         </section>
 
-        {/* Portfolio — live from tec-asset-service, or the curated sample. */}
+        {/* Portfolio — live from tec-asset-service, or an honest empty state. */}
         <section style={{ marginTop: 28 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
             <h2 style={{ fontSize: 16, fontWeight: 800, color: TEC_COLORS.text, margin: 0 }}>Your Portfolio</h2>
-            <span style={{ fontSize: 11, color: isLive ? TEC_COLORS.gold : TEC_COLORS.subtext, border: `1px solid ${isLive ? TEC_COLORS.gold + '55' : TEC_COLORS.gold + '33'}`, borderRadius: 999, padding: '2px 10px' }}>
-              {loaded ? (isLive ? 'live · asset-service' : 'sample · read-only') : 'loading…'}
+            <span style={{ fontSize: 11, color: status === 'ready' ? TEC_COLORS.gold : TEC_COLORS.subtext, border: `1px solid ${status === 'ready' ? TEC_COLORS.gold + '55' : TEC_COLORS.gold + '33'}`, borderRadius: 999, padding: '2px 10px' }}>
+              {status === 'loading' ? 'loading…' : status === 'ready' ? 'live · asset-service' : 'sign in'}
             </span>
           </div>
           <p style={{ fontSize: 12, color: TEC_COLORS.subtext, margin: '6px 0 14px', lineHeight: 1.5 }}>
-            {isLive
-              ? 'Your properties, recorded in tec-asset-service (C-114 §12). Estate presents them; it never owns the record. Values are indicative (Analytics).'
-              : 'A demo portfolio showing the lifecycle per property. Register a property to see it here, backed by tec-asset-service. Values are indicative (Analytics).'}
+            Your properties, recorded in tec-asset-service (C-114 §12). Estate presents them; it never owns
+            the record. Values are indicative (Analytics).
           </p>
+
+          {status === 'unavailable' && (
+            <div style={{ ...card, textAlign: 'center', padding: '28px 16px', color: TEC_COLORS.subtext, fontSize: 13, lineHeight: 1.6 }}>
+              Sign in with Pi to see your property portfolio. Register a property to add one — it&apos;s
+              recorded in tec-asset-service and appears here.
+            </div>
+          )}
+          {status === 'ready' && portfolio.length === 0 && (
+            <div style={{ ...card, textAlign: 'center', padding: '28px 16px', color: TEC_COLORS.subtext, fontSize: 13, lineHeight: 1.6 }}>
+              No properties yet. Register one above to start managing its lifecycle across TEC.
+            </div>
+          )}
+
+          {status === 'ready' && portfolio.length > 0 && (
           <div style={{ display: 'grid', gap: 10 }}>
             {portfolio.map((p) => {
               const inner = (
@@ -120,6 +136,7 @@ export default function EstateHome() {
               return <Link key={p.id} href={`/property/${p.id}`} style={propCard}>{inner}</Link>;
             })}
           </div>
+          )}
         </section>
 
         <p style={{ fontSize: 11, color: TEC_COLORS.subtext, margin: '24px 0 0', lineHeight: 1.5 }}>
@@ -128,6 +145,7 @@ export default function EstateHome() {
           Capital → payment-service + FundX · title → external legal · verification → Zone ·
           market data → Analytics · protection → Insure · property records → tec-asset-service.
         </p>
+        <InviteCard />
       </div>
     </main>
   );

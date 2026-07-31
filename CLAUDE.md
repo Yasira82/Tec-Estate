@@ -28,7 +28,7 @@ Built from `tec-template-base` (Next.js 15 frontend).
 **Current Phase: Estate V0 — App Scaffold & Portal Readiness.** Identity / domain /
 slug / legal + Real-Estate-OS themed home + **Estate Pro payment surface** (the Pi
 Portal "Process a Transaction" gate) + a **read-only sample Portfolio** (lifecycle
-demo). Real transactions are NOT built (see boundary). Not yet deployed.
+demo). Real transactions are NOT built (see boundary). Deployed (Mainnet) · Pi App ID registered · env set · payment live · referral growth loop wired (C-133).
 
 ---
 
@@ -38,7 +38,7 @@ demo). Real transactions are NOT built (see boundary). Not yet deployed.
 |-------|-------|
 | **App** | TEC Estate |
 | **Domain** | `https://estate.tecosystem.app` |
-| **Pi App ID** | ⏳ TBD — register at Pi Developer Portal · then Vercel `NEXT_PUBLIC_PI_APP_ID` |
+| **Pi App ID** | ✅ Registered (Mainnet) · Vercel `NEXT_PUBLIC_PI_APP_ID` |
 | **APP_SOURCE slug** | `estate` (payment-service resolves `PI_API_KEY_ESTATE`) |
 | **PI_SANDBOX** | `false` (Mainnet) |
 

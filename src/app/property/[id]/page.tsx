@@ -3,34 +3,21 @@
 // investment · verification · protection). No purchase, no title transfer, no
 // capital movement — Estate coordinates; the owning systems execute (C-114 §4/§6).
 import Link from 'next/link';
-import type { Metadata } from 'next';
 import { TEC_COLORS } from '@yasser172/tec-ui';
-import { getProperty, PORTFOLIO, TYPE_META, OWNERSHIP_META } from '@/lib/estate/portfolio';
+import { TYPE_META, OWNERSHIP_META } from '@/lib/estate/portfolio';
 import { fetchLiveProperty } from '@/lib/estate/fetch-property';
 
-// Samples are prerendered (SSG); a live property slug not in this list is
-// server-rendered on demand (dynamicParams defaults to true) and read from
-// tec-asset-service, owner-only (P6).
-export function generateStaticParams() {
-  return PORTFOLIO.map((p) => ({ id: p.id }));
-}
-
-export async function generateMetadata(
-  { params }: { params: Promise<{ id: string }> },
-): Promise<Metadata> {
-  const { id } = await params;
-  const p = getProperty(id);
-  return { title: p ? `${p.title} — TEC Estate` : 'TEC Estate — Property', description: p ? `${p.title} lifecycle` : 'TEC Estate property.' };
-}
+// Real data end-to-end (C-135 §4): a property is read LIVE from tec-asset-service,
+// owner-only (P6) — never a fabricated sample. Rendered dynamically (owner-scoped
+// no-store fetch).
+export const dynamic = 'force-dynamic';
 
 export default async function PropertyPage(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  // Sample first (SSG); otherwise a live, owner-only property from the asset-service.
-  const sample = getProperty(id);
-  const p = sample ?? await fetchLiveProperty(id);
-  const isLive = !sample && !!p;
+  // Live, owner-only property from the asset-service (null if not yours / no session).
+  const p = await fetchLiveProperty(id);
 
   const wrap: React.CSSProperties = {
     minHeight: '100vh', background: TEC_COLORS.bg, color: TEC_COLORS.text,
@@ -45,7 +32,7 @@ export default async function PropertyPage(
           <Link href="/app" style={{ fontSize: 13, color: TEC_COLORS.gold, textDecoration: 'none' }}>← Portfolio</Link>
           <h1 style={{ fontSize: 22, fontWeight: 900, color: TEC_COLORS.text, marginTop: 16 }}>Property not found</h1>
           <p style={{ fontSize: 13, color: TEC_COLORS.subtext }}>
-            No property <code>{id}</code> you can view. Live properties are visible only
+            No property <code>{id}</code> you can view. Properties are visible only
             to their owner — sign in with the owning account (P6).
           </p>
         </div>
@@ -95,9 +82,7 @@ export default async function PropertyPage(
         </div>
 
         <p style={{ fontSize: 11, color: TEC_COLORS.subtext, margin: '22px 0 0', lineHeight: 1.5 }}>
-          {isLive
-            ? 'Recorded in tec-asset-service (C-114 §12) — Estate presents it, never owns it. '
-            : 'This is a read-only sample. '}
+          Recorded in tec-asset-service (C-114 §12) — Estate presents it, never owns it.
           Estate coordinates the lifecycle — it never processes a full property
           purchase in Pi, transfers legal title, or holds capital (C-114 §6).
           Financing → FundX · verification → Zone · protection → Insure ·
