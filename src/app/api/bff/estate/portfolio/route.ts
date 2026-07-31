@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  PORTFOLIO, PILLARS, isPropertyAsset, mapAssetToProperty, type AssetRecord,
+  PILLARS, isPropertyAsset, mapAssetToProperty, type AssetRecord,
 } from '@/lib/estate/portfolio';
 
 // GET /api/bff/estate/portfolio — the user's property portfolio (C-114 §12).
@@ -9,9 +9,11 @@ import {
 // session cookie — never the body, P6), keeps the property-kind ones, and maps
 // them into the Estate view. Estate presents; it never mutates asset truth here.
 //
-// Fail-SAFE: with no session, no gateway, an upstream error, or an empty result,
-// it returns the curated read-only sample so /app is never blank (source:'sample').
-// A real portfolio returns source:'live'.
+// Real data end-to-end (C-135 §4): the lifecycle PILLARS are Estate's definitional
+// model (shown always); the portfolio is the user's OWN data. With no session, no
+// gateway, or an upstream error the source is 'unavailable' with an empty portfolio
+// (honest state) — never a fabricated sample. A live read (even empty — a real user
+// with no properties yet) returns source:'live'.
 const GW = process.env.API_GATEWAY_URL ?? '';
 
 const getUserId = (req: NextRequest): string => {
@@ -21,17 +23,17 @@ const getUserId = (req: NextRequest): string => {
   } catch { return ''; }
 };
 
-const sample = () =>
+const unavailable = () =>
   NextResponse.json(
-    { source: 'sample', readOnly: true, pillars: PILLARS, portfolio: PORTFOLIO, count: PORTFOLIO.length },
-    { headers: { 'Cache-Control': 'private, max-age=60' } },
+    { source: 'unavailable', readOnly: true, pillars: PILLARS, portfolio: [], count: 0 },
+    { headers: { 'Cache-Control': 'no-store' } },
   );
 
 export async function GET(req: NextRequest) {
   const userId = getUserId(req);
   const token  = req.cookies.get('tec_access_token')?.value ?? '';
-  // No gateway or no session → the demo sample (public, read-only).
-  if (!GW || !userId) return sample();
+  // No gateway or no session → honest unavailable (no fabricated portfolio).
+  if (!GW || !userId) return unavailable();
 
   try {
     const res = await fetch(`${GW}/api/assets/user/${encodeURIComponent(userId)}`, {
@@ -44,16 +46,16 @@ export async function GET(req: NextRequest) {
       },
       cache: 'no-store',
     });
-    if (!res.ok) return sample();
+    if (!res.ok) return unavailable();
     const body = await res.json().catch(() => ({}));
     const assets: AssetRecord[] = Array.isArray(body?.data) ? body.data : Array.isArray(body) ? body : [];
     const portfolio = assets.filter(isPropertyAsset).map(mapAssetToProperty);
-    if (portfolio.length === 0) return sample();   // real user, no properties yet → demo
+    // A real user with no properties yet is a live, honest empty portfolio.
     return NextResponse.json(
       { source: 'live', readOnly: true, pillars: PILLARS, portfolio, count: portfolio.length },
       { headers: { 'Cache-Control': 'private, max-age=30' } },
     );
   } catch {
-    return sample();   // upstream error → never blank
+    return unavailable();   // upstream error → honest empty, never a fabricated portfolio
   }
 }
