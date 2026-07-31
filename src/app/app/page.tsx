@@ -12,6 +12,7 @@
 // are definitional; the portfolio is the user's own data (honest empty when there
 // are none / no session — never a fabricated sample).
 import Link from 'next/link';
+import { InviteCard } from '@/components/referral/InviteCard';
 import { useEffect, useState } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
@@ -144,6 +145,7 @@ export default function EstateHome() {
           Capital → payment-service + FundX · title → external legal · verification → Zone ·
           market data → Analytics · protection → Insure · property records → tec-asset-service.
         </p>
+        <InviteCard />
       </div>
     </main>
   );
