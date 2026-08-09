@@ -156,8 +156,9 @@ export function EstatePro() {
         </div>
       </div>
       <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 8, lineHeight: 1.5 }}>
-        For owners and agents — premium listing visibility, portfolio tools, and
-        priority consultation. A service subscription, not a property purchase:
+        For owners and agents — a <strong style={{ color: TEC_COLORS.text }}>📊 Portfolio Insights</strong>
+        dashboard (your properties by type, occupancy, leased/listed, Zone-verified — never valuation),
+        premium listing visibility, and priority consultation. A service subscription, not a property purchase:
         Estate never processes full property value in Pi (C-114 §6).
       </div>
 
