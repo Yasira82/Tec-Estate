@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
 import { TEC_COLORS } from '@yasser172/tec-ui';
 import { EstatePro } from './components/EstatePro';
+import { EstateInsights } from './components/EstateInsights';
 import { RegisterProperty } from './components/RegisterProperty';
 import { PILLARS, TYPE_META, OWNERSHIP_META, type Property } from '@/lib/estate/portfolio';
 
@@ -138,6 +139,9 @@ export default function EstateHome() {
           </div>
           )}
         </section>
+
+        {/* Portfolio Insights — Estate Pro (own-data; counts + lifecycle, never valuation) */}
+        <EstateInsights />
 
         <p style={{ fontSize: 11, color: TEC_COLORS.subtext, margin: '24px 0 0', lineHeight: 1.5 }}>
           Estate coordinates the lifecycle; it never processes a full property purchase
