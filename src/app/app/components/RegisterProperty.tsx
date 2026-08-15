@@ -150,7 +150,7 @@ export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }
         <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success }}>✅ Property registered</div>
         <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 6, lineHeight: 1.5 }}>
           Recorded in tec-asset-service. It now appears in your live portfolio.
-          Verification is requested separately via Zone (C-120).
+          Verification is requested separately via Zone.
         </div>
         <button
           onClick={() => { setStatus('idle'); setTitle(''); setLocation(''); setOpen(false); }}
@@ -168,7 +168,7 @@ export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }
         <div>
           <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.gold }}>➕ Register a property</div>
           <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 4, lineHeight: 1.5 }}>
-            Add a property to your portfolio (recorded in tec-asset-service). A {LISTING_FEE}π listing fee — a service, not the property value (C-114 §6).
+            Add a property to your portfolio (recorded in tec-asset-service). A {LISTING_FEE}π listing fee — a service, not the property value.
           </div>
         </div>
         <button
@@ -232,9 +232,9 @@ export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }
       </button>
 
       <div style={{ fontSize: 11, color: TEC_COLORS.subtext, marginTop: 10, lineHeight: 1.5 }}>
-        The listing fee is a Pi service payment (C-114 §7). Estate records the property
+        The listing fee is a Pi service payment. Estate records the property
         in tec-asset-service; it never holds capital, transfers legal title, or asserts
-        valuation (C-114 §4/§6). Verification is earned via Zone, not self-declared.
+        valuation. Verification is earned via Zone, not self-declared.
       </div>
 
       {status === 'error' && (

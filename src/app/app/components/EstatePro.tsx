@@ -171,7 +171,7 @@ export function EstatePro() {
         For owners and agents — a <strong style={{ color: TEC_COLORS.text }}>📊 Portfolio Insights</strong>
         dashboard (your properties by type, occupancy, leased/listed, Zone-verified — never valuation),
         premium listing visibility, and priority consultation. A service subscription, not a property purchase:
-        Estate never processes full property value in Pi (C-114 §6).
+        Estate never processes full property value in Pi.
       </div>
 
       <button

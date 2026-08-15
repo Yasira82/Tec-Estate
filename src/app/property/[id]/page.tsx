@@ -68,7 +68,7 @@ export default async function PropertyPage(
         </div>
 
         <p style={{ fontSize: 13, color: TEC_COLORS.subtext, margin: '12px 0 0' }}>
-          <strong style={{ color: TEC_COLORS.text }}>Indicative value:</strong> {p.indicativeValue} — from Analytics, not a valuation (C-114 §5).
+          <strong style={{ color: TEC_COLORS.text }}>Indicative value:</strong> {p.indicativeValue} — from Analytics, not a valuation.
         </p>
 
         <h2 style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.text, margin: '26px 0 10px' }}>Lifecycle</h2>
@@ -82,9 +82,9 @@ export default async function PropertyPage(
         </div>
 
         <p style={{ fontSize: 11, color: TEC_COLORS.subtext, margin: '22px 0 0', lineHeight: 1.5 }}>
-          Recorded in tec-asset-service (C-114 §12) — Estate presents it, never owns it.
+          Recorded in tec-asset-service — Estate presents it, never owns it.
           Estate coordinates the lifecycle — it never processes a full property
-          purchase in Pi, transfers legal title, or holds capital (C-114 §6).
+          purchase in Pi, transfers legal title, or holds capital.
           Financing → FundX · verification → Zone · protection → Insure ·
           payments → tec-payment-service · title → external legal.
         </p>

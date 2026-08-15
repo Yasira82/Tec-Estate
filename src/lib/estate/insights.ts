@@ -11,7 +11,7 @@ export interface PortfolioInsights {
   byType:       Record<string, number>;
   byOwnership:  Record<string, number>;
   byLease:      Record<string, number>;
-  zoneVerified: number;   // presented from Zone — never minted (C-120)
+  zoneVerified: number; // presented from Zone — never minted
   leased:       number;   // income-generating (leaseStatus === 'leased')
   listed:       number;   // on the market
 }

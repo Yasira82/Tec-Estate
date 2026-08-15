@@ -64,7 +64,7 @@ export default function EstateHome() {
           <p style={{ fontSize: 14, color: TEC_COLORS.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>
             Not just a marketplace — the operating system for your property.
             <strong style={{ color: TEC_COLORS.text }}> “Where do you live, and what do you own or manage?”</strong>
-            Estate coordinates the full lifecycle across TEC (C-114).
+            Estate coordinates the full lifecycle across TEC.
           </p>
         </header>
 
@@ -97,7 +97,7 @@ export default function EstateHome() {
             </span>
           </div>
           <p style={{ fontSize: 12, color: TEC_COLORS.subtext, margin: '6px 0 14px', lineHeight: 1.5 }}>
-            Your properties, recorded in tec-asset-service (C-114 §12). Estate presents them; it never owns
+            Your properties, recorded in tec-asset-service. Estate presents them; it never owns
             the record. Values are indicative (Analytics).
           </p>
 
@@ -145,7 +145,7 @@ export default function EstateHome() {
 
         <p style={{ fontSize: 11, color: TEC_COLORS.subtext, margin: '24px 0 0', lineHeight: 1.5 }}>
           Estate coordinates the lifecycle; it never processes a full property purchase
-          in Pi, transfers legal title, holds capital, or asserts valuation (C-114 §4/§6).
+          in Pi, transfers legal title, holds capital, or asserts valuation.
           Capital → payment-service + FundX · title → external legal · verification → Zone ·
           market data → Analytics · protection → Insure · property records → tec-asset-service.
         </p>

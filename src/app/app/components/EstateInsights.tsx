@@ -53,7 +53,7 @@ export function EstateInsights() {
           <div style={{ color: TEC_COLORS.text, fontWeight: 800, fontSize: 14 }}>🔒 See your portfolio at a glance</div>
           <p style={{ color: TEC_COLORS.subtext, fontSize: 13, lineHeight: 1.6, marginTop: 8 }}>
             Estate Pro breaks your properties down by type, ownership, and occupancy — how many are
-            leased, listed, or Zone-verified. Your own data (C-114). No valuation — that stays
+            leased, listed, or Zone-verified. Your own data. No valuation — that stays
             indicative (Analytics). Upgrade below.
           </p>
         </div>

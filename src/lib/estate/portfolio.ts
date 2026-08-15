@@ -14,8 +14,8 @@ export interface Lifecycle {
   ownership:    string;   // ownership status (title truth = external legal)
   leasing:      string;   // lease/rent status (payments settle via payment-service)
   management:   string;   // maintenance / bills / documents
-  investment:   string;   // financing / pooled investment → FundX (C-113)
-  verification: string;   // property/owner/agent verification → Zone (C-120)
+  investment: string; // financing / pooled investment → FundX
+  verification: string; // property/owner/agent verification → Zone
   protection:   string;   // insurance → Insure
 }
 
@@ -54,8 +54,8 @@ export const PILLARS = [
   { icon: '📜', title: 'Ownership',    body: 'Owned, shared, investment, and rental properties in one portfolio.' },
   { icon: '🔑', title: 'Leasing',      body: 'Lease contracts, monthly rent, renewals, and reminders.' },
   { icon: '🛠️', title: 'Management',   body: 'Maintenance, bills, utilities, insurance, and documents.' },
-  { icon: '📈', title: 'Investment',   body: 'Finance a purchase or co-invest in property — via FundX (C-113).' },
-  { icon: '🛡️', title: 'Verification', body: 'Property, owner, and agent verification — via Zone (C-120).' },
+  { icon: '📈', title: 'Investment', body: 'Finance a purchase or co-invest in property — via FundX.' },
+  { icon: '🛡️', title: 'Verification', body: 'Property, owner, and agent verification — via Zone.' },
   { icon: '☂️', title: 'Protection',   body: 'Insure the property — via Insure. Estate coordinates, never holds capital.' },
 ];
 
