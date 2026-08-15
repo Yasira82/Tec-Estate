@@ -62,9 +62,9 @@ export default function EstateHome() {
             {isLoading ? 'Welcome' : `Welcome, ${name}`}
           </h1>
           <p style={{ fontSize: 14, color: TEC_COLORS.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>
-            Not just a marketplace — the operating system for your property.
-            <strong style={{ color: TEC_COLORS.text }}> “Where do you live, and what do you own or manage?”</strong>
-            Estate coordinates the full lifecycle across TEC.
+            Everything about your property, in one place —
+            <strong style={{ color: TEC_COLORS.text }}> track ownership, leasing, value, and upkeep</strong>
+            {' '}as your needs change.
           </p>
         </header>
 
@@ -93,18 +93,17 @@ export default function EstateHome() {
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
             <h2 style={{ fontSize: 16, fontWeight: 800, color: TEC_COLORS.text, margin: 0 }}>Your Portfolio</h2>
             <span style={{ fontSize: 11, color: status === 'ready' ? TEC_COLORS.gold : TEC_COLORS.subtext, border: `1px solid ${status === 'ready' ? TEC_COLORS.gold + '55' : TEC_COLORS.gold + '33'}`, borderRadius: 999, padding: '2px 10px' }}>
-              {status === 'loading' ? 'loading…' : status === 'ready' ? 'live · asset-service' : 'sign in'}
+              {status === 'loading' ? 'loading…' : status === 'ready' ? 'live' : 'sign in'}
             </span>
           </div>
           <p style={{ fontSize: 12, color: TEC_COLORS.subtext, margin: '6px 0 14px', lineHeight: 1.5 }}>
-            Your properties, recorded in tec-asset-service. Estate presents them; it never owns
-            the record. Values are indicative (Analytics).
+            Your properties, all in one place. Values shown are estimates.
           </p>
 
           {status === 'unavailable' && (
             <div style={{ ...card, textAlign: 'center', padding: '28px 16px', color: TEC_COLORS.subtext, fontSize: 13, lineHeight: 1.6 }}>
-              Sign in with Pi to see your property portfolio. Register a property to add one — it&apos;s
-              recorded in tec-asset-service and appears here.
+              Sign in with Pi to see your property portfolio. Register a property to add one —
+              it&apos;ll appear here.
             </div>
           )}
           {status === 'ready' && portfolio.length === 0 && (
@@ -144,10 +143,8 @@ export default function EstateHome() {
         <EstateInsights />
 
         <p style={{ fontSize: 11, color: TEC_COLORS.subtext, margin: '24px 0 0', lineHeight: 1.5 }}>
-          Estate coordinates the lifecycle; it never processes a full property purchase
-          in Pi, transfers legal title, holds capital, or asserts valuation.
-          Capital → payment-service + FundX · title → external legal · verification → Zone ·
-          market data → Analytics · protection → Insure · property records → tec-asset-service.
+          Estate helps you list, manage, and track your property. It doesn&apos;t process full
+          property sales or transfer legal title — those go through the proper legal channels.
         </p>
         <InviteCard />
       </div>
