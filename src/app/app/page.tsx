@@ -23,7 +23,7 @@ import { PILLARS, TYPE_META, OWNERSHIP_META, type Property } from '@/lib/estate/
 
 export default function EstateHome() {
   const { user, isLoading } = usePiAuth();
-  const name = user?.piUsername ? `@${user.piUsername}` : 'there';
+  const name = user?.piUsername ? `@${user.piUsername}` : '';
 
   const [portfolio, setPortfolio] = useState<Property[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'unavailable'>('loading');
@@ -59,7 +59,7 @@ export default function EstateHome() {
         <header>
           <div style={{ fontSize: 12, letterSpacing: 1, color: TEC_COLORS.subtext, textTransform: 'uppercase' }}>TEC Estate · Real Estate OS</div>
           <h1 style={{ fontSize: 26, fontWeight: 900, color: TEC_COLORS.gold, margin: '6px 0 0' }}>
-            {isLoading ? 'Welcome' : `Welcome, ${name}`}
+            {isLoading || !name ? 'Welcome' : `Welcome, ${name}`}
           </h1>
           <p style={{ fontSize: 14, color: TEC_COLORS.subtext, margin: '6px 0 0', lineHeight: 1.6 }}>
             Everything about your property, in one place —
