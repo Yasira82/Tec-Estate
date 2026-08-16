@@ -149,8 +149,8 @@ export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }
       <div style={{ ...card, borderColor: `${TEC_COLORS.success}66` }}>
         <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.success }}>✅ Property registered</div>
         <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 6, lineHeight: 1.5 }}>
-          Recorded in tec-asset-service. It now appears in your live portfolio.
-          Verification is requested separately via Zone (C-120).
+          Added — it now appears in your portfolio.
+          Verification is requested separately via Zone.
         </div>
         <button
           onClick={() => { setStatus('idle'); setTitle(''); setLocation(''); setOpen(false); }}
@@ -168,7 +168,7 @@ export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }
         <div>
           <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.gold }}>➕ Register a property</div>
           <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 4, lineHeight: 1.5 }}>
-            Add a property to your portfolio (recorded in tec-asset-service). A {LISTING_FEE}π listing fee — a service, not the property value (C-114 §6).
+            Add a property to your portfolio. A {LISTING_FEE}π listing fee — a service fee, not the property price.
           </div>
         </div>
         <button
@@ -232,9 +232,9 @@ export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }
       </button>
 
       <div style={{ fontSize: 11, color: TEC_COLORS.subtext, marginTop: 10, lineHeight: 1.5 }}>
-        The listing fee is a Pi service payment (C-114 §7). Estate records the property
-        in tec-asset-service; it never holds capital, transfers legal title, or asserts
-        valuation (C-114 §4/§6). Verification is earned via Zone, not self-declared.
+        The listing fee is a service payment, not the property price. Estate doesn&apos;t
+        transfer legal title — that goes through the proper legal channels. Verification
+        is earned, not self-declared.
       </div>
 
       {status === 'error' && (

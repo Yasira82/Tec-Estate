@@ -53,8 +53,8 @@ export function EstateInsights() {
           <div style={{ color: TEC_COLORS.text, fontWeight: 800, fontSize: 14 }}>🔒 See your portfolio at a glance</div>
           <p style={{ color: TEC_COLORS.subtext, fontSize: 13, lineHeight: 1.6, marginTop: 8 }}>
             Estate Pro breaks your properties down by type, ownership, and occupancy — how many are
-            leased, listed, or Zone-verified. Your own data (C-114). No valuation — that stays
-            indicative (Analytics). Upgrade below.
+            leased, listed, or Zone-verified. Your own data — values shown are estimates,
+            not official valuations. Upgrade below.
           </p>
         </div>
       ) : data.total === 0 ? (
@@ -90,7 +90,7 @@ export function EstateInsights() {
           )}
 
           <div style={{ fontSize: 11, color: TEC_COLORS.subtext, lineHeight: 1.5 }}>
-            Counts + lifecycle only — Estate never asserts property value (indicative, via Analytics · C-114 §5).
+            Counts and lifecycle status only — values shown are estimates.
           </div>
         </div>
       )}
