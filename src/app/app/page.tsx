@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { InviteCard } from '@/components/referral/InviteCard';
 import { useEffect, useState } from 'react';
 import { usePiAuth } from '@yasser172/tec-auth';
+import { useMe } from '@/lib-client/hooks/useMe';
 import { TEC_COLORS } from '@yasser172/tec-ui';
 import { EstatePro } from './components/EstatePro';
 import { EstateInsights } from './components/EstateInsights';
@@ -23,7 +24,9 @@ import { PILLARS, TYPE_META, OWNERSHIP_META, type Property } from '@/lib/estate/
 
 export default function EstateHome() {
   const { user, isLoading } = usePiAuth();
-  const name = user?.piUsername ? `@${user.piUsername}` : '';
+  const me = useMe(); // server-resolved Pi username (Pi Browser hides tec_user from client JS — C-123 §3)
+  const piName = me.username ?? user?.piUsername ?? null;
+  const name = piName ? `@${piName}` : '';
 
   const [portfolio, setPortfolio] = useState<Property[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'unavailable'>('loading');
