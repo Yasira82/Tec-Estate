@@ -22,4 +22,21 @@ export const ar = {
     appsTitle: 'منظومة TEC',
     appsCount: '24 تطبيق',
   },
+  estate: {
+    brand:       'TEC Estate · نظام العقارات',
+    welcome:     'أهلاً',
+    welcomeName: 'أهلاً، {name}',
+    subtitle:    'كل ما يخص عقارك في مكان واحد — تابع الملكية والإيجار والقيمة والصيانة مع تغيّر احتياجاتك.',
+    nav: { home: 'الرئيسية', portfolio: 'المحفظة', pro: 'Pro', settings: 'الإعدادات' },
+    lifecycle:   'دورة الحياة',
+    portfolio:   'محفظتك',
+    footer:      'Estate بيساعدك تدرج وتدير وتتابع عقارك. مابيعالجش بيع العقار كامل ولا نقل الملكية القانوني — دول بيمشوا في القنوات القانونية الصحيحة.',
+    settings: {
+      profile: 'الملف الشخصي', planFree: 'مجاني', planPro: 'Pro',
+      connectedPi: 'متصل بـ Pi', notSignedIn: 'غير مسجّل الدخول', member: 'عضو TEC',
+      appearance: 'المظهر', language: 'اللغة', languageDesc: 'لغة العرض',
+      about: 'حول', version: 'الإصدار', domain: 'النطاق', ecosystem: 'المنظومة',
+      builtOn: 'مبني على', builtOnPi: 'شبكة Pi', logout: 'تسجيل الخروج',
+    },
+  },
 };
