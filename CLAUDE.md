@@ -142,13 +142,13 @@ Estate V0 — App Scaffold & Portal Readiness (customized from template):
   ✅ /app themed as the Real Estate OS home + Estate Pro (real Pi U2A payment)
   ✅ read-only sample Portfolio (lifecycle demo — NO purchase, NO title transfer)
 
-Next (before live):
-  □ Register Pi App ID (Pi Developer Portal) → set Vercel NEXT_PUBLIC_PI_APP_ID +
+Live on Mainnet — all complete (SSoT: architecture/app-fleet.yaml):
+  ✅ Register Pi App ID (Pi Developer Portal) → set Vercel NEXT_PUBLIC_PI_APP_ID +
     API_GATEWAY_URL · INTERNAL_SECRET · SSO_SECRET · PI_SANDBOX=false.
-  □ payment-service: set PI_API_KEY_ESTATE on Railway (approve→502 otherwise, C-12 §11).
-  □ Hub SSO: add estate.tecosystem.app + tec-estate.vercel.app to Hub /api/auth/sso
+  ✅ payment-service: set PI_API_KEY_ESTATE on Railway (approve→502 otherwise, C-12 §11).
+  ✅ Hub SSO: add estate.tecosystem.app + tec-estate.vercel.app to Hub /api/auth/sso
     ALLOWED_TARGETS + Hub domain registry (both in this change).
-  □ Deploy (Vercel) + runtime-verify login (C-123) + a real Estate Pro payment
+  ✅ Deploy (Vercel) + runtime-verify login (C-123) + a real Estate Pro payment
     Mode 1 (Hub) AND Mode 2 (standalone). Ensure Portal Linked App = MAINNET (a
     Testnet linked app on a Mainnet listing = SDK_MISSING at payment — FundX lesson).
 
