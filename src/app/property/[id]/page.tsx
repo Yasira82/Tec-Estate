@@ -62,8 +62,24 @@ export default async function PropertyPage(
             <h1 style={{ fontSize: 24, fontWeight: 900, color: TEC_COLORS.text, margin: '4px 0 0' }}>{p.title}</h1>
             <div style={{ fontSize: 13, color: TEC_COLORS.gold, marginTop: 2 }}>{p.location}</div>
           </div>
-          <div style={{ fontSize: 12, fontWeight: 800, color: p.zoneVerified ? '#0a0800' : TEC_COLORS.text, background: p.zoneVerified ? `linear-gradient(135deg, ${TEC_COLORS.gold}, ${TEC_COLORS.goldDark})` : 'transparent', border: p.zoneVerified ? 'none' : `1px solid ${TEC_COLORS.subtext}66`, borderRadius: 999, padding: '6px 12px', whiteSpace: 'nowrap' }}>
-            {p.zoneVerified ? '🛡️ Zone Verified' : 'Verification pending'}
+          {/* "Verification pending" was a permanent state, and a misleading one.
+              `fetchLiveProperty` never sets `zoneVerified` — nothing does —
+              because ZONE HAS NO PROPERTY TYPE. Its four kinds are PROJECT,
+              MERCHANT, BUILDER and COMMUNITY (C-120 §3); a building is none of
+              them.
+
+              So "pending" promised a review that was not queued, could not be
+              requested, and had no process behind it. The honest label says
+              what is true: this is what the owner recorded, and nobody has
+              checked it. When Zone gains a property type — or Estate presents
+              the OWNER's Zone verification, which is knowable today — this
+              becomes a real badge instead of a promise. */}
+          <div style={{
+            fontSize: 12, fontWeight: 700, color: TEC_COLORS.subtext,
+            border: `1px solid ${TEC_COLORS.subtext}44`,
+            borderRadius: 999, padding: '6px 12px', whiteSpace: 'nowrap',
+          }}>
+            Self-recorded
           </div>
         </div>
 

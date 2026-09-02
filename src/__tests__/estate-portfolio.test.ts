@@ -54,4 +54,13 @@ describe('TEC Estate — Real Estate OS portfolio (C-114, read-only)', () => {
     const q = mapAssetToProperty({ metadata: { kind: 'property', type: 'spaceship' } });
     expect(['apartment']).toContain(q.type);
   });
+
+  it('NO fixture claims a Zone verification', () => {
+    // A fixture carrying a verification badge is the platform verifying itself,
+    // which C-120 and C-108 §4 both forbid. These rows are not rendered today —
+    // and that is exactly why it matters: Explorer's seed was dead too, until
+    // someone wired it and eight invented businesses appeared in production with
+    // six "Verified" badges among them. A fixture is one import away from real.
+    expect(PORTFOLIO.every((x) => x.zoneVerified === false)).toBe(true);
+  });
 });

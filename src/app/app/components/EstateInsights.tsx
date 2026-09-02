@@ -66,11 +66,15 @@ export function EstateInsights() {
       ) : (
         <div style={{ ...card, display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div style={{ display: 'flex', gap: 8 }}>
+            {/* The "✓ Zone" tile was here, and it could only ever read 0:
+                nothing sets `zoneVerified`, because Zone has no property type
+                (C-120 §3). A dashboard counter permanently pinned to zero reads
+                as a broken app, not as a high bar — the same reason Explorer's
+                "live · 0 verified" was replaced rather than left standing. */}
             {[
               ['Properties', data.total],
               ['Leased', data.leased],
               ['Listed', data.listed],
-              ['✓ Zone', data.zoneVerified],
             ].map(([label, value]) => (
               <div key={label} style={{ flex: 1, textAlign: 'center' }}>
                 <div style={{ fontSize: 20, fontWeight: 900, color: TEC_COLORS.gold, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
