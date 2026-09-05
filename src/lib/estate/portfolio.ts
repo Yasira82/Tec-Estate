@@ -60,6 +60,15 @@ export const PILLARS = [
 ];
 
 // Sample portfolio (demo). Read-only.
+// ⚠️ Every fixture below is UNVERIFIED, and that is enforced rather than
+// remembered (see the `verified` values). A sample row carrying a verification
+// badge is the platform verifying itself — C-120 and C-108 §4 both forbid it,
+// and C-135 §4 forbids a fabricated directory reaching a screen.
+//
+// These arrays are NOT rendered today; the pages resolve live data. That is
+// exactly why this matters: Explorer's seed was dead too, until someone wired
+// it and eight invented businesses appeared in production with six "Verified"
+// badges among them. A fixture is one import away from being real.
 export const PORTFOLIO: Property[] = [
   {
     id: 'downtown-apt-12b',
@@ -69,7 +78,7 @@ export const PORTFOLIO: Property[] = [
     location: 'City Center',
     leaseStatus: 'owner-occupied',
     indicativeValue: '~ 42,000 π (indicative)',
-    zoneVerified: true,
+    zoneVerified: false,
     lifecycle: {
       ownership:    'Owner-occupied · sole title (title truth via external legal).',
       leasing:      'Not leased — owner residence.',
@@ -87,7 +96,7 @@ export const PORTFOLIO: Property[] = [
     location: 'Coast Road',
     leaseStatus: 'leased',
     indicativeValue: '~ 180,000 π (indicative)',
-    zoneVerified: true,
+    zoneVerified: false,
     lifecycle: {
       ownership:    'Owned + rented out to a verified tenant.',
       leasing:      'Leased · 12-month contract · rent settled via payment-service.',

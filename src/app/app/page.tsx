@@ -132,8 +132,13 @@ export default function EstateHome() {
                           <span style={{ fontSize: 14, fontWeight: 800, color: TEC_COLORS.text }}>
                             {TYPE_META[p.type].icon} {p.title}
                           </span>
-                          <span style={{ fontSize: 10, fontWeight: 800, color: p.zoneVerified ? TEC_COLORS.gold : TEC_COLORS.subtext, border: `1px solid ${p.zoneVerified ? TEC_COLORS.gold + '55' : TEC_COLORS.subtext + '55'}`, borderRadius: 999, padding: '2px 8px', whiteSpace: 'nowrap' }}>
-                            {p.zoneVerified ? '🛡️ Zone Verified' : 'Unverified'}
+                          {/* Same as the detail page: Zone has no property
+                              type (C-120 §3 — PROJECT / MERCHANT / BUILDER /
+                              COMMUNITY), so nothing ever sets this and
+                              "Unverified" was a permanent verdict on a review
+                              nobody could request. Say what is true instead. */}
+                          <span style={{ fontSize: 10, fontWeight: 700, color: TEC_COLORS.subtext, border: `1px solid ${TEC_COLORS.subtext}44`, borderRadius: 999, padding: '2px 8px', whiteSpace: 'nowrap' }}>
+                            Self-recorded
                           </span>
                         </div>
                         <div style={{ fontSize: 11, color: TEC_COLORS.gold, marginTop: 3 }}>
