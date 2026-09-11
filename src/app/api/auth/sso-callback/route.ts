@@ -12,6 +12,7 @@ import { HUB_HOSTS }                 from '@/lib/pi-network';
 const ALLOWED_AUDIENCES = [
   'https://estate.tecosystem.app',
   'https://tec-estate.vercel.app',
+  'https://estate-test.tecosystem.app',
 ];
 const DEFAULT_REDIRECT = '/app';
 
