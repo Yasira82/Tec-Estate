@@ -32,7 +32,7 @@ describe('TEC Estate — Real Estate OS portfolio (C-114, read-only)', () => {
     expect(getProperty('downtown-apt-12b')?.title).toBe('Downtown Apartment 12B');
   });
 
-  it('isPropertyAsset keeps only property-kind assets (asset-service, C-114 §12)', () => {
+  it('isPropertyAsset keeps only property-kind assets (asset-service; C-114 → Deployment Status → Property records)', () => {
     expect(isPropertyAsset({ metadata: { kind: 'property' } })).toBe(true);
     expect(isPropertyAsset({ category: 'REAL_ESTATE' })).toBe(true);
     expect(isPropertyAsset({ category: 'DOMAIN', metadata: { kind: 'domain' } })).toBe(false);
