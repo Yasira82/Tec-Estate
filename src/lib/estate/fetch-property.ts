@@ -1,7 +1,8 @@
 // Server-only — fetch ONE live property (by slug) from tec-asset-service for the
 // property detail page. Estate never owns the record; it reads + presents it
-// (C-114 §12). Ownership isolation (P6): a property is returned ONLY to its owner
-// — identity comes from the session cookie, never the URL. Any miss (no session,
+// (C-114 → Deployment Status → Property records). Ownership isolation (P6): a
+// property is returned ONLY to its owner — identity comes from the session cookie,
+// never the URL. Any miss (no session,
 // not a property, not the caller's, gateway error) fails closed → null → 404.
 import { cookies } from 'next/headers';
 import { isPropertyAsset, mapAssetToProperty, type AssetRecord, type Property } from './portfolio';

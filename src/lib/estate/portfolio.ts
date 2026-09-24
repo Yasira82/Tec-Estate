@@ -129,7 +129,7 @@ export const PORTFOLIO: Property[] = [
 export const getProperty = (id: string): Property | null =>
   PORTFOLIO.find((p) => p.id === id) ?? null;
 
-// ── asset-service integration (C-114 §12) ───────────────────────────────────
+// ── asset-service integration (C-114 → Deployment Status → Property records) ───────────────────────────────────
 // A property is stored as an Asset in tec-asset-service (Estate never owns the
 // record — it presents it). We tag property assets with metadata.kind==='property'
 // and carry the display fields in metadata. This maps one asset-service Asset

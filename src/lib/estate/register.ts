@@ -1,6 +1,6 @@
 // TEC Estate — register a property (C-114 §7 service fees). Registering a property
 // records it as an Asset in tec-asset-service (category DIGITAL_ASSET + metadata
-// kind='property'); Estate NEVER owns the record (C-114 §12). It is gated by a
+// kind='property'); Estate NEVER owns the record (C-114 → Deployment Status → Property records). It is gated by a
 // small Pi LISTING FEE — a service payment, NOT the property value (C-114 §6).
 import type { PropertyType, OwnershipType } from './portfolio';
 

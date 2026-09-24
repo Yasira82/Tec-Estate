@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
   }
   const { title, type, ownership, location, payment_id } = parsed.data;
 
-  // A property is a first-class REAL_ESTATE asset in tec-asset-service (C-114 §12).
+  // A property is a first-class REAL_ESTATE asset in tec-asset-service (C-114 → Deployment Status → Property records).
   // metadata.kind='property' is kept as a belt-and-suspenders tag — isPropertyAsset()
   // matches on either the category or the tag, so the portfolio reads it back both ways.
   const body = {

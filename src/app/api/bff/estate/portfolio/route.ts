@@ -3,7 +3,7 @@ import {
   PILLARS, isPropertyAsset, mapAssetToProperty, type AssetRecord,
 } from '@/lib/estate/portfolio';
 
-// GET /api/bff/estate/portfolio — the user's property portfolio (C-114 §12).
+// GET /api/bff/estate/portfolio — the user's property portfolio (C-114 → Deployment Status → Property records).
 // Estate does NOT own property records — tec-asset-service does. This BFF reads
 // the caller's OWN assets from the asset-service (server-side, identity from the
 // session cookie — never the body, P6), keeps the property-kind ones, and maps
