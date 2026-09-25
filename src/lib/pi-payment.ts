@@ -66,7 +66,10 @@ export const redirectToHubPayment = (params: {
     pay:    '1',
     source: APP_SOURCE,
     amount: String(params.amount),
-    item:   params.itemId,
+    // `product_id` is the name the Hub reads (tec-app #257 made it accept `item` too).
+    // Sending only `item` recorded every Mode-1 payment with no product.
+    product_id: params.itemId,
+    item:       params.itemId,
     // Where the Hub sends the user back — on Cancel AND on success. Omitting it
     // left the Hub defaulting to its OWN /hub, so cancelling a payment that
     // started here dropped the user on the Hub: they never left this app in
