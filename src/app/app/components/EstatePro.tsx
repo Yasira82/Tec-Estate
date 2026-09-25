@@ -81,6 +81,10 @@ export function EstatePro() {
     const p  = new URLSearchParams(window.location.search);
     const st = p.get('payment_status');
     if (!st) return;
+    // Only Estate Pro's own return (or an older Hub that echoed no product). A property
+    // listing fee comes back here too, and is RegisterProperty's to handle.
+    const product = p.get('product_id') ?? '';
+    if (product && product !== ITEM_ID) return;
     if (st === 'success') setStatus('success');
     else if (st === 'error') { setStatus('error'); setMessage('Payment did not complete. Please try again.'); }
     window.history.replaceState({}, '', '/app');

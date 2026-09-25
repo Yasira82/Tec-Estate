@@ -1,10 +1,16 @@
-// TEC Estate — register a property (C-114 §7 service fees). Registering a property
-// records it as an Asset in tec-asset-service (category DIGITAL_ASSET + metadata
-// kind='property'); Estate NEVER owns the record (C-114 → Deployment Status → Property records). It is gated by a
-// small Pi LISTING FEE — a service payment, NOT the property value (C-114 §6).
+// TEC Estate — register a property (C-114 §7 service fees). A property is recorded as a
+// REAL_ESTATE asset in tec-asset-service; Estate never owns the record (C-114 → Deployment
+// Status → Property records). Registering costs a small Pi LISTING FEE — a service
+// payment, never the property value (C-114 §4/§6).
+//
+// The property travels INSIDE the payment: its product id is `estate-property:<base64>`.
+// asset-service reads it from `payment.completed.v1` and records the property itself
+// (PurchaseService), so a registration started from the Hub (Mode 1) is no longer lost
+// on the way back, and a closed tab after paying no longer means paid-and-nothing.
 import type { PropertyType, OwnershipType } from './portfolio';
 
 // Listing fee in π — a SERVICE fee (C-114 §7), never the property value (§6).
+// asset-service enforces the same amount (ESTATE_LISTING_FEE_PI).
 export const LISTING_FEE = 3;
 
 export interface PropertyDraft {
@@ -14,23 +20,22 @@ export interface PropertyDraft {
   location:  string;
 }
 
-/** Stable, unique slug for the asset-service record (unique constraint). */
-export const slugifyProperty = (title: string): string => {
-  const base = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'property';
-  const rand = Math.random().toString(36).slice(2, 8);
-  return `${base}-${rand}`;
+export const PROPERTY_PRODUCT_PREFIX = 'estate-property:';
+
+/**
+ * The payment's product id for registering `d`. UTF-8 then base64 — a title may be
+ * Arabic, and btoa() alone throws on anything outside Latin-1. asset-service decodes it
+ * with the same encoding and validates every field (purchase-product.ts).
+ */
+export const encodePropertyProduct = (d: PropertyDraft): string => {
+  const json  = JSON.stringify({ t: d.title.trim(), y: d.type, o: d.ownership, l: d.location.trim() });
+  let binary  = '';
+  new TextEncoder().encode(json).forEach((b) => { binary += String.fromCharCode(b); });
+  return PROPERTY_PRODUCT_PREFIX + btoa(binary);
 };
 
-/** The metadata written onto the property Asset — read back by isPropertyAsset. */
-export const buildPropertyMetadata = (d: PropertyDraft): Record<string, unknown> => ({
-  kind:         'property',
-  title:        d.title.trim(),
-  type:         d.type,
-  ownership:    d.ownership,
-  location:     d.location.trim(),
-  zoneVerified: false,           // verification comes from Zone, never self-asserted
-  registeredAt: new Date().toISOString(),
-});
+export const isPropertyProduct = (productId: string | null | undefined): boolean =>
+  String(productId ?? '').startsWith(PROPERTY_PRODUCT_PREFIX);
 
 export const PROPERTY_TYPE_OPTIONS: { value: PropertyType; label: string }[] = [
   { value: 'apartment', label: 'Apartment' },

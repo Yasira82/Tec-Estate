@@ -5,11 +5,13 @@
 // The write is gated by a Pi LISTING FEE: a SERVICE payment, NOT the property
 // value (C-114 §4/§6). Estate never processes full property value in Pi.
 //
-// Flow (standalone / Mode 2): pay the listing fee → get the payment id back →
-// POST /api/bff/estate/property with payment_id as proof-of-payment; the
-// asset-service uses it as the provision transactionId. ADR-007 dual-mode is
-// preserved: if the Pi session is foreign (Hub navigation), we hand the fee to
-// the Hub modal (Mode 1) rather than touch window.Pi.
+// Flow: the property travels INSIDE the payment (its product id is
+// `estate-property:<base64>`), and tec-asset-service records it from the payment's own
+// event. This component then only CLAIMS the payment (POST /api/bff/estate/property) to
+// show the result; if that call never happens — a closed tab, a lost Hub round trip —
+// the property is recorded anyway. ADR-007 dual-mode is preserved: in a foreign Pi
+// session (Hub navigation) the fee goes to the Hub modal (Mode 1), which returns here
+// with ?payment_status=…&payment_id=…&product_id=estate-property:….
 import { useEffect, useState } from 'react';
 import { TEC_COLORS } from '@yasser172/tec-ui';
 import {
@@ -22,11 +24,12 @@ import {
   LISTING_FEE,
   PROPERTY_TYPE_OPTIONS,
   OWNERSHIP_OPTIONS,
+  encodePropertyProduct,
+  isPropertyProduct,
   type PropertyDraft,
 } from '@/lib/estate/register';
 import type { PropertyType, OwnershipType } from '@/lib/estate/portfolio';
 
-const ITEM_ID = 'estate_listing_fee';
 const MEMO    = 'TEC Estate — property listing fee';
 
 const asText = (v: unknown): string => {
@@ -40,7 +43,7 @@ const asText = (v: unknown): string => {
   return v == null ? '' : String(v);
 };
 
-type Status = 'idle' | 'creating' | 'paying' | 'registering' | 'success' | 'error';
+type Status = 'idle' | 'creating' | 'paying' | 'registering' | 'confirming' | 'success' | 'error';
 
 export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }) {
   const [open,   setOpen]   = useState(false);
@@ -65,7 +68,8 @@ export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }
   const valid = title.trim().length >= 2 && location.trim().length >= 2;
   const busy  = status === 'creating' || status === 'paying' || status === 'registering';
 
-  // Provision the property in tec-asset-service, keyed by the paid listing fee.
+  // Claim the paid listing fee: asset-service records the property from the payment's
+  // own event, and answers with where that stands.
   const registerProperty = async (paymentId: string): Promise<boolean> => {
     setStatus('registering');
     try {
@@ -75,23 +79,47 @@ export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }
           'Content-Type': 'application/json',
           'x-csrf-token': document.cookie.match(/(?:^|;\s*)tec_csrf=([^;]*)/)?.[1] ?? '',
         },
-        body: JSON.stringify({ ...draft(), payment_id: paymentId }),
+        body: JSON.stringify({ payment_id: paymentId }),
       });
+      if (res.status === 202) {
+        // Paid; the payment's event has not landed yet. It will be recorded from it.
+        setStatus('confirming');
+        setTimeout(() => onRegistered?.(), 4000);
+        return true;
+      }
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
+        const err = await res.json().catch(() => ({})) as { outcome?: string; error?: unknown };
         setStatus('error');
-        setMessage(asText(err?.error) || 'Property registered payment succeeded but recording failed. Contact support with your payment id.');
+        setMessage(err.outcome
+          ? `Payment received but the property was not recorded (${err.outcome}). Contact support with payment ${paymentId} for a refund.`
+          : asText(err.error) || 'Could not confirm the registration. It will appear once the payment is confirmed.');
         return false;
       }
       setStatus('success');
       onRegistered?.();
       return true;
-    } catch (err) {
-      setStatus('error');
-      setMessage(asText(err) || 'Could not record the property. Please try again.');
-      return false;
+    } catch {
+      // Not lost — asset-service records it from the payment's event.
+      setStatus('confirming');
+      setTimeout(() => onRegistered?.(), 4000);
+      return true;
     }
   };
+
+  // Mode-1 round trip: the Hub returns to /app with the payment. Only a property payment
+  // is ours to handle — Estate Pro's return is EstatePro's.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const p = new URLSearchParams(window.location.search);
+    if (!isPropertyProduct(p.get('product_id'))) return;
+    const st = p.get('payment_status');
+    const id = p.get('payment_id') ?? '';
+    window.history.replaceState({}, '', '/app');
+    setOpen(true);
+    if (st === 'success' && id) { void registerProperty(id); return; }
+    if (st === 'error') { setStatus('error'); setMessage('Payment did not complete. Please try again.'); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async () => {
     if (busy || !valid) return;
@@ -100,7 +128,7 @@ export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }
     // the listing fee. Standalone registration completes in the Pi Browser app.
     if (isHubNavigation() || (window as { __TEC_PI_FOREIGN_SESSION?: boolean }).__TEC_PI_FOREIGN_SESSION
         || !(window as { Pi?: unknown }).Pi || !piReady) {
-      redirectToHubPayment({ amount: LISTING_FEE, itemId: ITEM_ID, memo: MEMO });
+      redirectToHubPayment({ amount: LISTING_FEE, itemId: encodePropertyProduct(draft()), memo: MEMO });
       return;
     }
 
@@ -108,14 +136,15 @@ export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }
     setStatus('creating');
     setMessage('');
     try {
-      const internalId = await createPaymentRecord(LISTING_FEE, ITEM_ID, MEMO);
+      const product    = encodePropertyProduct(draft());
+      const internalId = await createPaymentRecord(LISTING_FEE, product, MEMO);
       if (!internalId) {
         setStatus('error');
         setMessage('Could not start the listing-fee payment. Please sign in again and retry.');
         return;
       }
       setStatus('paying');
-      const result = await createU2APayment(LISTING_FEE, MEMO, { item_id: ITEM_ID, kind: 'property' }, internalId);
+      const result = await createU2APayment(LISTING_FEE, MEMO, { item_id: product, kind: 'property' }, internalId);
       if (result.success && result.status === 'completed') {
         await registerProperty(result.paymentId ?? internalId);
       } else if (result.status === 'cancelled') {
@@ -143,6 +172,18 @@ export function RegisterProperty({ onRegistered }: { onRegistered?: () => void }
     border: `1px solid ${TEC_COLORS.gold}22`, fontSize: 14,
   };
   const label: React.CSSProperties = { fontSize: 12, fontWeight: 700, color: TEC_COLORS.subtext };
+
+  if (status === 'confirming') {
+    return (
+      <div style={{ ...card, borderColor: `${TEC_COLORS.gold}66` }}>
+        <div style={{ fontSize: 15, fontWeight: 800, color: TEC_COLORS.gold }}>⏳ Payment received</div>
+        <div style={{ fontSize: 12, color: TEC_COLORS.subtext, marginTop: 6, lineHeight: 1.5 }}>
+          Your property is being recorded from the payment — it will appear in your
+          portfolio in a moment. You can leave this page.
+        </div>
+      </div>
+    );
+  }
 
   if (status === 'success') {
     return (
