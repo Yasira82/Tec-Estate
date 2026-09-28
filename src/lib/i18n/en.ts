@@ -24,6 +24,14 @@ export const en = {
   },
   estate: {
     brand:       'TEC Estate · Real Estate OS',
+    // C19 — "no session" and "signed in, but the backend did not answer" are
+    // different states; both used to say "Sign in with Pi".
+    loadState: {
+      signedOutTitle: '',
+      signedOut:      'Sign in with Pi to see your property portfolio. Register a property to add one — it\'ll appear here.',
+      downTitle:      '',
+      down:           'You\'re signed in, but your portfolio didn\'t load just now. Try again in a moment — nothing is shown rather than a guess.',
+    },
     welcome:     'Welcome',
     welcomeName: 'Welcome, {name}',
     subtitle:    'Everything about your property, in one place — track ownership, leasing, value, and upkeep as your needs change.',
