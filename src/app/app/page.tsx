@@ -104,7 +104,7 @@ export default function EstateHome() {
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
                 <h2 style={{ fontSize: 16, fontWeight: 800, color: TEC_COLORS.text, margin: 0 }}>{t.estate.portfolio}</h2>
                 <span style={{ fontSize: 11, color: status === 'ready' ? TEC_COLORS.gold : TEC_COLORS.subtext, border: `1px solid ${status === 'ready' ? TEC_COLORS.gold + '55' : TEC_COLORS.gold + '33'}`, borderRadius: 999, padding: '2px 10px' }}>
-                  {status === 'loading' ? 'loading…' : status === 'ready' ? 'live' : 'sign in'}
+                  {status === 'loading' ? 'loading…' : status === 'ready' ? 'live' : me.authenticated ? 'unavailable' : 'sign in'}
                 </span>
               </div>
               <p style={{ fontSize: 12, color: TEC_COLORS.subtext, margin: '6px 0 14px', lineHeight: 1.5 }}>
@@ -113,8 +113,8 @@ export default function EstateHome() {
 
               {status === 'unavailable' && (
                 <div style={{ ...card, textAlign: 'center', padding: '28px 16px', color: TEC_COLORS.subtext, fontSize: 13, lineHeight: 1.6 }}>
-                  Sign in with Pi to see your property portfolio. Register a property to add one —
-                  it&apos;ll appear here.
+                  {/* C19 — a signed-in owner whose portfolio failed to load was told to sign in. */}
+                  {!me.loading && (me.authenticated ? t.estate.loadState.down : t.estate.loadState.signedOut)}
                 </div>
               )}
               {status === 'ready' && portfolio.length === 0 && (
