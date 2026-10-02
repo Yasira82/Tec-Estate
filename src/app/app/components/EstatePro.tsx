@@ -17,6 +17,7 @@ import {
   createPaymentRecord,
   createU2APayment,
 } from '@/lib/pi-payment';
+import { CancelProButton } from '@/components/pro/CancelProButton';
 
 const PRICE   = 15;                     // π / month
 const ITEM_ID = 'estate_pro_monthly';
@@ -146,6 +147,7 @@ export function EstatePro() {
             {daysRemaining <= 7 ? '⏳ ' : ''}Expires in {daysRemaining} day{daysRemaining === 1 ? '' : 's'}{daysRemaining <= 7 ? ' — re-subscribe to keep Pro (one-time monthly, no auto-renewal).' : '.'}
           </div>
         )}
+        <CancelProButton />
       </div>
     );
   }

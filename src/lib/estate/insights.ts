@@ -3,6 +3,7 @@
 // Value with zero population (it's your own portfolio). CRITICAL (C-114 §5): Estate NEVER
 // asserts valuation — insights are COUNTS + lifecycle status only, never a summed π value.
 import type { Property, PropertyType, OwnershipType, LeaseStatus } from './portfolio';
+import { APP_SOURCE } from '@/lib/app-source';
 
 const GW = process.env.API_GATEWAY_URL ?? '';
 
@@ -44,7 +45,7 @@ export function computePortfolioInsights(props: Property[]): PortfolioInsights {
 export async function resolveProStatus(token: string | null): Promise<boolean> {
   if (!GW || !token) return false;
   try {
-    const res = await fetch(`${GW}/api/commerce/subscriptions/status`, {
+    const res = await fetch(`${GW}/api/commerce/subscriptions/status?app=${encodeURIComponent(APP_SOURCE)}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization:  `Bearer ${token}`,
