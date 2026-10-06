@@ -1,5 +1,7 @@
 'use client';
 
+import { SignInGate } from '@/components/pi/SignInGate';
+
 // TEC Estate — the Real Estate Operating System of TEC (C-114, extended). Estate
 // manages the full property lifecycle: ownership · leasing · management ·
 // investment · verification · protection. It coordinates the lifecycle across TEC
@@ -20,7 +22,7 @@ import { BottomNav, type EstTab } from './components/BottomNav';
 import { SettingsView } from './components/SettingsView';
 import { PILLARS, TYPE_META, OWNERSHIP_META, type Property } from '@/lib/estate/portfolio';
 
-export default function EstateHome() {
+function EstateHome() {
   const { user, isLoading } = usePiAuth();
   const me = useMe(); // server-resolved Pi username (Pi Browser hides tec_user from client JS — C-123 §3)
   const { t } = useTranslation();
@@ -169,4 +171,11 @@ export default function EstateHome() {
       <BottomNav active={tab} onSelect={setTab} />
     </main>
   );
+}
+
+// The door: a sign-in button before any screen when there is no session
+// (SignInGate — C-123 §10; owner, 2026-10-06). A visit from the Hub arrives
+// signed in (§12) and goes straight through.
+export default function EstateHomeGated() {
+  return <SignInGate><EstateHome /></SignInGate>;
 }
