@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { gatewayFetch } from '@/lib/gateway-fetch';
 
 // POST /api/bff/estate/property — the follow-up after the listing fee is paid.
 //
@@ -40,7 +41,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const res = await fetch(
+    const res = await gatewayFetch(
       `${GW}/api/assets/purchases/${encodeURIComponent(parsed.data.payment_id)}/claim`,
       {
         method:  'POST',

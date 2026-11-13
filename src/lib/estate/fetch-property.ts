@@ -6,6 +6,7 @@
 // not a property, not the caller's, gateway error) fails closed → null → 404.
 import { cookies } from 'next/headers';
 import { isPropertyAsset, mapAssetToProperty, type AssetRecord, type Property } from './portfolio';
+import { gatewayFetch } from '@/lib/gateway-fetch';
 
 const GW = process.env.API_GATEWAY_URL ?? '';
 
@@ -22,7 +23,7 @@ export async function fetchLiveProperty(slug: string): Promise<Property | null> 
   if (!userId) return null;
 
   try {
-    const res = await fetch(`${GW}/api/assets/${encodeURIComponent(slug)}`, {
+    const res = await gatewayFetch(`${GW}/api/assets/${encodeURIComponent(slug)}`, {
       headers: {
         'Content-Type':  'application/json',
         Authorization:   `Bearer ${token}`,
