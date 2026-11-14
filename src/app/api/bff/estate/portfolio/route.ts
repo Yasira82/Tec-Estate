@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   PILLARS, isPropertyAsset, mapAssetToProperty, type AssetRecord,
 } from '@/lib/estate/portfolio';
+import { gatewayFetch } from '@/lib/gateway-fetch';
 
 // GET /api/bff/estate/portfolio — the user's property portfolio (C-114 → Deployment Status → Property records).
 // Estate does NOT own property records — tec-asset-service does. This BFF reads
@@ -36,7 +37,7 @@ export async function GET(req: NextRequest) {
   if (!GW || !userId) return unavailable();
 
   try {
-    const res = await fetch(`${GW}/api/assets/user/${encodeURIComponent(userId)}`, {
+    const res = await gatewayFetch(`${GW}/api/assets/user/${encodeURIComponent(userId)}`, {
       headers: {
         'Content-Type':  'application/json',
         Authorization:   `Bearer ${token}`,

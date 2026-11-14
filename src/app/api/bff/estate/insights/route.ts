@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isPropertyAsset, mapAssetToProperty, type AssetRecord } from '@/lib/estate/portfolio';
 import { computePortfolioInsights, resolveProStatus } from '@/lib/estate/insights';
+import { gatewayFetch } from '@/lib/gateway-fetch';
 
 // GET /api/bff/estate/insights — Estate Pro "Portfolio Insights" (C-114). An aggregate of
 // the caller's OWN properties (read from asset-service — Estate never owns the record).
@@ -26,7 +27,7 @@ export async function GET(req: NextRequest) {
   if (!isPro) return NextResponse.json({ pro: false, insights: null }, { headers: { 'Cache-Control': 'private, max-age=15' } });
 
   try {
-    const res = await fetch(`${GW}/api/assets/user/${encodeURIComponent(userId)}`, {
+    const res = await gatewayFetch(`${GW}/api/assets/user/${encodeURIComponent(userId)}`, {
       headers: {
         'Content-Type':  'application/json',
         Authorization:   `Bearer ${token}`,
